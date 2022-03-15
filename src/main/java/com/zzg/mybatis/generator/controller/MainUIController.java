@@ -98,6 +98,10 @@ public class MainUIController extends BaseFXController {
     @FXML
     private CheckBox useDAOExtendStyle;
     @FXML
+    private CheckBox mybatisPlusStyle;
+    @FXML
+    private CheckBox fastMybatisStyle;
+    @FXML
     private CheckBox useSchemaPrefix;
     @FXML
     private CheckBox jsr310Support;
@@ -273,6 +277,10 @@ public class MainUIController extends BaseFXController {
 		useTableNameAliasCheckbox.setTooltip(new Tooltip("在Mapper XML文件中表名使用别名，并且列全部使用as查询"));
 		overrideXML.setTooltip(new Tooltip("重新生成时把原XML文件覆盖，否则是追加"));
         useDAOExtendStyle.setTooltip(new Tooltip("将通用接口方法放在公共接口中，DAO接口留空"));
+
+        mybatisPlusStyle.setTooltip(new Tooltip("使用mybatisPlus父接口"));
+        fastMybatisStyle.setTooltip(new Tooltip("使用fastMybatis父接口"));
+
         forUpdateCheckBox.setTooltip(new Tooltip("在Select语句中增加for update后缀"));
         useLombokPlugin.setTooltip(new Tooltip("实体类使用Lombok @Data简化代码"));
 	}
@@ -438,6 +446,10 @@ public class MainUIController extends BaseFXController {
         generatorConfig.setEncoding(encodingChoice.getValue());
         generatorConfig.setUseExample(useExample.isSelected());
         generatorConfig.setUseDAOExtendStyle(useDAOExtendStyle.isSelected());
+
+        generatorConfig.setMybatisPlusStyle(mybatisPlusStyle.isSelected());
+        generatorConfig.setFastMybatisStyle(fastMybatisStyle.isSelected());
+
         generatorConfig.setUseSchemaPrefix(useSchemaPrefix.isSelected());
         generatorConfig.setJsr310Support(jsr310Support.isSelected());
         return generatorConfig;
@@ -470,6 +482,10 @@ public class MainUIController extends BaseFXController {
         encodingChoice.setValue(generatorConfig.getEncoding());
         useExample.setSelected(generatorConfig.isUseExample());
         useDAOExtendStyle.setSelected(generatorConfig.isUseDAOExtendStyle());
+
+        mybatisPlusStyle.setSelected(generatorConfig.isMybatisPlusStyle());
+        fastMybatisStyle.setSelected(generatorConfig.isFastMybatisStyle());
+
         useSchemaPrefix.setSelected(generatorConfig.isUseSchemaPrefix());
         jsr310Support.setSelected(generatorConfig.isJsr310Support());
     }

@@ -33,6 +33,10 @@ public class CommonDAOInterfacePlugin extends PluginAdapter {
     	return "true".equals(getProperties().getProperty("useExample"));
 	}
 
+    private boolean checkBooleanValue(String name) {
+        return "true".equals(getProperties().getProperty(name));
+    }
+
     @Override
     public List<GeneratedJavaFile> contextGenerateAdditionalJavaFiles(IntrospectedTable introspectedTable) {
         boolean hasPk = introspectedTable.hasPrimaryKeyColumns();
@@ -96,6 +100,18 @@ public class CommonDAOInterfacePlugin extends PluginAdapter {
     public boolean clientGenerated(Interface interfaze,
                                    TopLevelClass topLevelClass,
                                    IntrospectedTable introspectedTable) {
+        if(this.checkBooleanValue("mybatisPlusStyle")){
+            return this.mybatisPlusDaoGen(interfaze, topLevelClass, introspectedTable);
+        }else if(this.checkBooleanValue("fastMybatisStyle")){
+            return this.fastMybatisDaoGen(interfaze, topLevelClass, introspectedTable);
+        }else{
+            return this.customSuperDaoGen(interfaze, topLevelClass, introspectedTable);
+        }
+    }
+
+    public boolean customSuperDaoGen(Interface interfaze,
+                                   TopLevelClass topLevelClass,
+                                   IntrospectedTable introspectedTable) {
         interfaze.addJavaDocLine("/**");
         interfaze.addJavaDocLine(" * " + interfaze.getType().getShortName() + "继承基类");
         interfaze.addJavaDocLine(" */");
@@ -118,14 +134,76 @@ public class CommonDAOInterfacePlugin extends PluginAdapter {
             primaryKeyTypeJavaType = baseModelJavaType;
         }
         daoSuperType.addTypeArgument(primaryKeyTypeJavaType);
-		interfaze.addImportedType(primaryKeyTypeJavaType);
+        interfaze.addImportedType(primaryKeyTypeJavaType);
 
-		if (isUseExample()) {
-			String exampleType = introspectedTable.getExampleType();
-			FullyQualifiedJavaType exampleTypeJavaType = new FullyQualifiedJavaType(exampleType);
-			daoSuperType.addTypeArgument(exampleTypeJavaType);
-			interfaze.addImportedType(exampleTypeJavaType);
-		}
+        if (isUseExample()) {
+            String exampleType = introspectedTable.getExampleType();
+            FullyQualifiedJavaType exampleTypeJavaType = new FullyQualifiedJavaType(exampleType);
+            daoSuperType.addTypeArgument(exampleTypeJavaType);
+            interfaze.addImportedType(exampleTypeJavaType);
+        }
+        interfaze.addImportedType(baseModelJavaType);
+        interfaze.addImportedType(daoSuperType);
+        interfaze.addSuperInterface(daoSuperType);
+        return true;
+    }
+
+    public boolean mybatisPlusDaoGen(Interface interfaze,
+                                     TopLevelClass topLevelClass,
+                                     IntrospectedTable introspectedTable){
+        interfaze.addJavaDocLine("/**");
+        interfaze.addJavaDocLine(" * " + interfaze.getType().getShortName() + "继承基类");
+        interfaze.addJavaDocLine(" */");
+
+        String daoSuperClass = "com.baomidou.mybatisplus.core.mapper.BaseMapper";
+        FullyQualifiedJavaType daoSuperType = new FullyQualifiedJavaType(daoSuperClass);
+
+        String targetPackage = introspectedTable.getContext().getJavaModelGeneratorConfiguration().getTargetPackage();
+
+        String domainObjectName = introspectedTable.getTableConfiguration().getDomainObjectName();
+        FullyQualifiedJavaType baseModelJavaType = new FullyQualifiedJavaType(targetPackage + "." + domainObjectName);
+        daoSuperType.addTypeArgument(baseModelJavaType);
+
+
+        interfaze.addImportedType(baseModelJavaType);
+        interfaze.addImportedType(daoSuperType);
+        interfaze.addSuperInterface(daoSuperType);
+        return true;
+    }
+
+    public boolean fastMybatisDaoGen(Interface interfaze,
+                                     TopLevelClass topLevelClass,
+                                     IntrospectedTable introspectedTable){
+        interfaze.addJavaDocLine("/**");
+        interfaze.addJavaDocLine(" * " + interfaze.getType().getShortName() + "继承基类");
+        interfaze.addJavaDocLine(" */");
+
+        String daoSuperClass = "com.gitee.fastmybatis.core.mapper.CrudMapper";
+        FullyQualifiedJavaType daoSuperType = new FullyQualifiedJavaType(daoSuperClass);
+
+        String targetPackage = introspectedTable.getContext().getJavaModelGeneratorConfiguration().getTargetPackage();
+
+        String domainObjectName = introspectedTable.getTableConfiguration().getDomainObjectName();
+        FullyQualifiedJavaType baseModelJavaType = new FullyQualifiedJavaType(targetPackage + "." + domainObjectName);
+        daoSuperType.addTypeArgument(baseModelJavaType);
+
+        FullyQualifiedJavaType primaryKeyTypeJavaType = null;
+        if (introspectedTable.getPrimaryKeyColumns().size() > 1) {
+            primaryKeyTypeJavaType = new FullyQualifiedJavaType(targetPackage + "." + domainObjectName + "Key");
+        }else if(introspectedTable.hasPrimaryKeyColumns()){
+            primaryKeyTypeJavaType = introspectedTable.getPrimaryKeyColumns().get(0).getFullyQualifiedJavaType();
+        }else {
+            primaryKeyTypeJavaType = baseModelJavaType;
+        }
+        daoSuperType.addTypeArgument(primaryKeyTypeJavaType);
+        interfaze.addImportedType(primaryKeyTypeJavaType);
+
+        if (isUseExample()) {
+            String exampleType = introspectedTable.getExampleType();
+            FullyQualifiedJavaType exampleTypeJavaType = new FullyQualifiedJavaType(exampleType);
+            daoSuperType.addTypeArgument(exampleTypeJavaType);
+            interfaze.addImportedType(exampleTypeJavaType);
+        }
         interfaze.addImportedType(baseModelJavaType);
         interfaze.addImportedType(daoSuperType);
         interfaze.addSuperInterface(daoSuperType);

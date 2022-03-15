@@ -246,6 +246,10 @@ public class MybatisGeneratorBridge {
                     || DbType.PostgreSQL.name().equals(dbType)) {
                 PluginConfiguration pluginConfiguration = new PluginConfiguration();
 				pluginConfiguration.addProperty("useExample", String.valueOf(generatorConfig.isUseExample()));
+
+				pluginConfiguration.addProperty("fastMybatisStyle", String.valueOf(generatorConfig.isFastMybatisStyle()));
+				pluginConfiguration.addProperty("mybatisPlusStyle", String.valueOf(generatorConfig.isMybatisPlusStyle()));
+
 				pluginConfiguration.addProperty("type", "com.zzg.mybatis.generator.plugins.CommonDAOInterfacePlugin");
                 pluginConfiguration.setConfigurationType("com.zzg.mybatis.generator.plugins.CommonDAOInterfacePlugin");
                 context.addPluginConfiguration(pluginConfiguration);

@@ -64,7 +64,27 @@ public class GeneratorConfig {
 
 	private boolean useDAOExtendStyle;
 
-    private boolean useSchemaPrefix;
+	private boolean mybatisPlusStyle;
+
+	private boolean fastMybatisStyle;
+
+	public boolean isMybatisPlusStyle() {
+		return mybatisPlusStyle;
+	}
+
+	public void setMybatisPlusStyle(boolean mybatisPlusStyle) {
+		this.mybatisPlusStyle = mybatisPlusStyle;
+	}
+
+	public boolean isFastMybatisStyle() {
+		return fastMybatisStyle;
+	}
+
+	public void setFastMybatisStyle(boolean fastMybatisStyle) {
+		this.fastMybatisStyle = fastMybatisStyle;
+	}
+
+	private boolean useSchemaPrefix;
 
     private boolean jsr310Support;
 
